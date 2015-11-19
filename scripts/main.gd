@@ -2,13 +2,23 @@ extends Node2D
 
 var selectedObject = null
 var camera
+var isUiChangeFogPressed = false
 
 func _ready():
 	set_process(true)
 	camera = get_node("camera")
+	for item in get_node("map/items").get_children():
+		get_node("map").registerObject(item)
 
 
 func _process(delta):
+	if (Input.is_action_pressed("ui_changeFog")):
+		isUiChangeFogPressed = true
+	else:
+		if (isUiChangeFogPressed):
+			get_node("map").useFog = !get_node("map").useFog
+			get_node("map").initFogMap()
+		isUiChangeFogPressed = false
 	if (camera.rightMouseRelease):
 		selectedObject = null
 		get_node("map").clearSelect()

@@ -9,8 +9,35 @@ const COLOR_YELLOW = 1
 const COLOR_RED = 2
 
 
+export var useFog = true
+var fogMap
+const FOG_NONE = -1
+const FOG_FULL = 0
+const FOG_NONVISIBLE = 1
+
+
 var tiles
 var TileClass = preload("res://scripts/tile.gd")
+
+
+func initFogMap():
+	fogMap = get_node("fogmap")
+	if (useFog):
+		fogMap.show()
+		for x in range(mapWidth):
+			for y in range(mapHeight):
+				recalcFogForTile(tiles[x][y])
+	else:
+		fogMap.hide()
+
+func recalcFogForTile(tile):
+	if (tile.visibleCount > 0):
+		fogMap.set_cell(tile.x,tile.y,FOG_NONE)
+	else:
+		if (tile.wasVisibled):
+			fogMap.set_cell(tile.x,tile.y,FOG_NONVISIBLE)
+		else:
+			fogMap.set_cell(tile.x,tile.y,FOG_FULL)
 
 func createTile(x,y,groundCode):
 	tiles[x].append(TileClass.new())
@@ -41,9 +68,11 @@ func clearSelect():
 	for x in range(mapWidth):
 		for y in range(mapHeight):
 			colorMap.set_cell(x,y,0)
-			tiles[x][y].parent = null
+			tiles[x][y].pathParent = null
 			tiles[x][y].currentPathSize = 999
 
+# WARNING !!!
+# This function ignore move cost of hexes!!!
 func getDistance(startX,startY,endX,endY):
 	return max(max(abs(tiles[startX][startY].cube_x-tiles[endX][endY].cube_x),abs(tiles[startX][startY].cube_y-tiles[endX][endY].cube_y)),abs(tiles[startX][startY].cube_z-tiles[endX][endY].cube_z))
 
@@ -51,7 +80,7 @@ func calculateReachZone(startX, startY, searchRange, flight):
 	for x in range(mapWidth):
 		for y in range(mapHeight):
 			colorMap.set_cell(x,y,0)
-			tiles[x][y].parent = null
+			tiles[x][y].pathParent = null
 			tiles[x][y].currentPathSize = 999
 	tiles[startX][startY].currentPathSize = 0
 	var searchedTiles = [tiles[startX][startY]]
@@ -73,7 +102,7 @@ func findPath(startX, startY, endX, endY, flight, needRecalcPath = false):
 	if (needRecalcPath):
 		for x in range(mapWidth):
 			for y in range(mapHeight):
-				tiles[x][y].parent = null
+				tiles[x][y].pathParent = null
 				tiles[x][y].currentPathSize = 999
 		tiles[startX][startY].currentPathSize = 0
 		var searchedTiles = [tiles[startX][startY]]
@@ -105,4 +134,5 @@ func findPath(startX, startY, endX, endY, flight, needRecalcPath = false):
 func _ready():
 	createMap()
 	colorMap = get_node("colormap")
+	initFogMap()
 	set_process(true)
