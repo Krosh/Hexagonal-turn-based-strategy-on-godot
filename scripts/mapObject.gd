@@ -3,6 +3,8 @@ extends Sprite
 export var mapX = 0
 export var mapY = 0
 
+var visibleRange = 7
+
 var steps = 5
 
 var maxHp = 10
@@ -10,6 +12,7 @@ var hp = maxHp
 
 var attack = 5
 var attackRange = 2
+
 
 var curTile = null
 

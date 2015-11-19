@@ -37,11 +37,11 @@ func _process(delta):
 	mapPos = get_parent().get_node("map").world_to_map(globalPos)
 	cursorPos = get_local_mouse_pos()
 	cursorPos = cursorPos+OS.get_window_size()*4/10
-	if (cursorPos.x<50):
+	if (cursorPos.x<-40):
 		set_pos(get_pos()-Vector2(SPEED*delta,0))
-	if (cursorPos.y<50):
+	if (cursorPos.y<-40):
 		set_pos(get_pos()-Vector2(0,SPEED*delta))
-	if (cursorPos.x>590):
+	if (cursorPos.x>690):
 		set_pos(get_pos()+Vector2(SPEED*delta,0))
-	if (cursorPos.y>430):
+	if (cursorPos.y>520):
 		set_pos(get_pos()+Vector2(0,SPEED*delta))

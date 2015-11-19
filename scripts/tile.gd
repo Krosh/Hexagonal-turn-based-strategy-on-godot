@@ -17,7 +17,7 @@ var pathParent
 var currentPathSize
 
 func isPassable():
-	return groundCode != 1 && elements.size() == 0
+	return moveCost>0 && elements.size() == 0
 
 func updateVisibleStatus(delta):
 	if (delta > 0):
@@ -29,7 +29,7 @@ func registerObject(obj):
 	elements.append(obj)
 	# change visibility
 	if (parent.useFog):
-		var visibleRange = 3
+		var visibleRange = obj.visibleRange
 		for x in range(max(obj.mapX-visibleRange,0),min(obj.mapX+visibleRange,parent.mapWidth)):
 			for y in range(max(obj.mapY-visibleRange,0),min(obj.mapY+visibleRange,parent.mapHeight)):
 				if (parent.getDistance(x,y,obj.mapX,obj.mapY) < visibleRange):
@@ -38,13 +38,18 @@ func registerObject(obj):
 func unregisterObject(obj):
 	elements.erase(obj)
 	if (parent.useFog):
-		var visibleRange = 3
+		var visibleRange = obj.visibleRange
 		for x in range(max(obj.mapX-visibleRange,0),min(obj.mapX+visibleRange,parent.mapWidth)):
 			for y in range(max(obj.mapY-visibleRange,0),min(obj.mapY+visibleRange,parent.mapHeight)):
 				if (parent.getDistance(x,y,obj.mapX,obj.mapY) < visibleRange):
 					parent.tiles[x][y].updateVisibleStatus(-1)
 
 func init():
+	# calc move cost
+	if (groundCode == 1):
+		moveCost = -1
+	if (groundCode == 4):
+		moveCost = 3
 	# calc cube coords
 	cube_x = x
 	cube_z = y - (x - (x % 2)) / 2

@@ -51,7 +51,7 @@ func createMap():
 	for x in range(mapWidth):
 		tiles.append([])
 		for y in range(mapHeight):
-			var groundCode = randi() % 3
+			var groundCode = randi() % 5
 			createTile(x,y,groundCode)
 			set_cell(x,y,groundCode)
 	for x in range(mapWidth):

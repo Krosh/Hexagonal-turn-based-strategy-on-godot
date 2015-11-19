@@ -3,6 +3,9 @@ extends Node2D
 var selectedObject = null
 var camera
 var isUiChangeFogPressed = false
+var isUiUpZoomPressed = false
+var isUiDownZoomPressed = false
+var mapZoom = 1.0
 
 func _ready():
 	set_process(true)
@@ -19,6 +22,22 @@ func _process(delta):
 			get_node("map").useFog = !get_node("map").useFog
 			get_node("map").initFogMap()
 		isUiChangeFogPressed = false
+	if (Input.is_action_pressed("ui_up_zoom")):
+		isUiUpZoomPressed = true
+	else:
+		if (isUiUpZoomPressed):
+			mapZoom = max(0.1,mapZoom - 0.1)
+			get_node("camera").set_zoom(Vector2(mapZoom,mapZoom))
+			get_node("camera").set_scale(Vector2(mapZoom,mapZoom))
+		isUiUpZoomPressed = false
+	if (Input.is_action_pressed("ui_down_zoom")):
+		isUiDownZoomPressed = true
+	else:
+		if (isUiDownZoomPressed):
+			mapZoom = min(4,mapZoom + 0.1)
+			get_node("camera").set_zoom(Vector2(mapZoom,mapZoom))
+			get_node("camera").set_scale(Vector2(mapZoom,mapZoom))
+		isUiDownZoomPressed = false
 	if (camera.rightMouseRelease):
 		selectedObject = null
 		get_node("map").clearSelect()
