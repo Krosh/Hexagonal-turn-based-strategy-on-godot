@@ -29,7 +29,7 @@ func createMap():
 			set_cell(x,y,groundCode)
 	for x in range(mapWidth):
 		for y in range(mapHeight):
-			tiles[x][y].calcNeigbours()
+			tiles[x][y].init()
 
 func registerObject(obj):
 	tiles[obj.mapX][obj.mapY].registerObject(obj)
@@ -44,6 +44,8 @@ func clearSelect():
 			tiles[x][y].parent = null
 			tiles[x][y].currentPathSize = 999
 
+func getDistance(startX,startY,endX,endY):
+	return max(max(abs(tiles[startX][startY].cube_x-tiles[endX][endY].cube_x),abs(tiles[startX][startY].cube_y-tiles[endX][endY].cube_y)),abs(tiles[startX][startY].cube_z-tiles[endX][endY].cube_z))
 
 func calculateReachZone(startX, startY, searchRange, flight):
 	for x in range(mapWidth):
@@ -60,8 +62,8 @@ func calculateReachZone(startX, startY, searchRange, flight):
 		var curTile = searchedTiles[i]
 		if (curTile.currentPathSize < searchRange):
 			for item in curTile.neighbours:
-				if ((flight || item.isPassable()) && item.currentPathSize > curTile.currentPathSize + 1):
-					item.currentPathSize = curTile.currentPathSize + 1
+				if ((flight || item.isPassable()) && item.currentPathSize > curTile.currentPathSize + item.moveCost):
+					item.currentPathSize = curTile.currentPathSize + item.moveCost
 					item.pathParent = curTile
 					colorMap.set_cell(item.x,item.y,COLOR_YELLOW)
 					searchedTiles.append(item)
@@ -80,8 +82,8 @@ func findPath(startX, startY, endX, endY, flight, needRecalcPath = false):
 			var i = 0
 			var curTile = searchedTiles[i]
 			for item in curTile.neighbours:
-				if ((flight || item.isPassable()) && item.currentPathSize > curTile.currentPathSize + 1):
-					item.currentPathSize = curTile.currentPathSize + 1
+				if ((flight || item.isPassable()) && item.currentPathSize > curTile.currentPathSize + item.moveCost):
+					item.currentPathSize = curTile.currentPathSize + item.moveCost
 					item.pathParent = curTile
 					searchedTiles.append(item)
 				if (item.x == endX && item.y == endY):
